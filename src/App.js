@@ -1,9 +1,15 @@
-import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 
 import { connect } from 'react-redux';
-import { setCurrentUser } from './components/Redux/users/user.actions';
+import { setCurrentUser } from './Redux/users/user.actions';
 
 import HomePage from './pages/homepage/homepage.component';
 import Shop from './pages/shop/shop.component';
@@ -13,14 +19,15 @@ import SignInSignUp from './pages/sign-in-and-sign-up/sign-in-and-sign-up.compon
 import { onSnapshot } from 'firebase/firestore';
 import { auth, createUserProfileDoc } from './firebase/firebase.utils';
 
+// App component
 class App extends React.Component {
-  unsunscribeFromAuth = null;
+  unsubscribeFromAuth = null;
 
-  // MOUNTING
   componentDidMount() {
     const { setCurrentUser } = this.props;
 
-    this.unsunscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+    // MOUNTING
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDoc(userAuth);
         console.log(userAuth);
@@ -37,10 +44,9 @@ class App extends React.Component {
 
   // UNMOUNT
   componentWillUnmount() {
-    this.unsunscribeFromAuth();
+    this.unsubscribeFromAuth();
   }
 
-  // RENDER
   render() {
     return (
       <div>
@@ -49,7 +55,17 @@ class App extends React.Component {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/shop" element={<Shop />} />
-            <Route path="/signin" element={<SignInSignUp />} />
+
+            <Route
+              path="/signin"
+              element={
+                this.props.currentUser ? (
+                  <Navigate to={'/'} />
+                ) : (
+                  <SignInSignUp />
+                )
+              }
+            />
           </Routes>
         </Router>
       </div>
@@ -57,8 +73,12 @@ class App extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  currentUser: state.user.currentUser,
+});
+
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

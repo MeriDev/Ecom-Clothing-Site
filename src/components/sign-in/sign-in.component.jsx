@@ -6,8 +6,8 @@ import CustomBtn from '../custom-button/custom-button-component';
 
 import FormInput from '../form-input/form-input.component';
 
-import { signUpWithGoogle } from '../../firebase/firebase.utils';
-// import {auth, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, signUpWithGoogle } from '../../firebase/firebase.utils';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 class SignIn extends Component {
   constructor(props) {
@@ -21,20 +21,15 @@ class SignIn extends Component {
   handleSubmit = async e => {
     e.preventDefault();
 
-    // const { email, password } = this.state;
+    const { email, password } = this.state;
 
-    // try {
-    //   await signInWithEmailAndPassword(auth, email, password)
-    //     .then
-    //     // userCredential => {
-    //     //   const user = userCredential.user;
-    //     //   console.log(user);
-    //     // }
-    //     ();
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    this.setState({ email: '', password: '' });
+    try {
+      await signInWithEmailAndPassword(auth, email, password).then(() => {
+        this.setState({ email: '', password: '' });
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   handleChange = e => {

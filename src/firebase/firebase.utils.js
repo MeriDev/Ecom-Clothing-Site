@@ -44,6 +44,7 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
 
 //* Sign in with google
 export const auth = getAuth(app);
+
 const provider = new GoogleAuthProvider();
 
 export const signUpWithGoogle = () => {
