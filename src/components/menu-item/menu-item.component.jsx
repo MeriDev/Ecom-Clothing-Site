@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 const MenuItem = ({ title, imageUrl, size, linkUrl }) => {
   const navigate = useNavigate();
-  console.log(linkUrl);
   return (
     <div
       className={`${size} menu-item`}
