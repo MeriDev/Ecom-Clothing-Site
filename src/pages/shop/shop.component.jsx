@@ -1,5 +1,5 @@
 import React from 'react';
-import CollectionOverview from '../../components/collection-overview/collection-overview.component';
+import CollectionOverview from '../../components/header/collection-overview/collection-overview.component';
 import './shop.styles.scss';
 import { Route, Routes } from 'react-router-dom';
 import CollectionPage from '../collection/collection.component';
