@@ -1,5 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  writeBatch,
+} from 'firebase/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -15,8 +22,7 @@ const app = initializeApp(firebaseConfig);
 
 //* Add users to DB
 // FIRESTORE
-const db = getFirestore(app);
-// const users = collection(db, 'users');
+export const db = getFirestore(app);
 
 export const createUserProfileDoc = async (userAuth, additionalData) => {
   if (!userAuth) return;
@@ -55,4 +61,40 @@ export const signUpWithGoogle = () => {
     .catch(error => {
       console.log(error);
     });
+};
+
+// Add Datat to firstore
+export const addCollectionsAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const batch = writeBatch(db);
+
+  const collectionRef = collection(db, collectionKey);
+  objectsToAdd.forEach(obj => {
+    const newDocRef = doc(collectionRef);
+    batch.set(newDocRef, obj);
+    console.log(newDocRef);
+  });
+
+  return await batch.commit();
+};
+
+// Fetch data from firestore and add routename proprety
+export const convertCollectcionsSnapshotToObjects = collections => {
+  const transformedCollections = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+
+    return {
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items,
+    };
+  });
+
+  return transformedCollections.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 };

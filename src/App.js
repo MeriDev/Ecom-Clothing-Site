@@ -1,5 +1,5 @@
-import React from 'react';
 import './App.css';
+import { useEffect } from 'react';
 
 import {
   BrowserRouter as Router,
@@ -19,18 +19,14 @@ import SignInSignUp from './pages/sign-in-and-sign-up/sign-in-and-sign-up.compon
 
 import { onSnapshot } from 'firebase/firestore';
 import { auth, createUserProfileDoc } from './firebase/firebase.utils';
+
 import { selectCurrentUser } from './Redux/users/user.selector';
 import { createStructuredSelector } from 'reselect';
 
 // App component
-class App extends React.Component {
-  unsubscribeFromAuth = null;
-
-  componentDidMount() {
-    const { setCurrentUser } = this.props;
-
-    // MOUNTING
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+const App = ({ currentUser, setCurrentUser }) => {
+  useEffect(() => {
+    const unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
         const userRef = await createUserProfileDoc(userAuth);
 
@@ -42,39 +38,28 @@ class App extends React.Component {
       }
       setCurrentUser(userAuth);
     });
-  }
 
-  // UNMOUNT
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
+    return () => unsubscribeFromAuth();
+  }, []);
 
-  render() {
-    return (
-      <div>
-        <Router>
-          <Header />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="shop/*" element={<ShopPage />} />
-            <Route path="checkout" element={<Checkout />} />
+  return (
+    <div>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="shop/*" element={<ShopPage />} />
+          <Route path="checkout" element={<Checkout />} />
 
-            <Route
-              path="/signin"
-              element={
-                this.props.currentUser ? (
-                  <Navigate to={'/'} />
-                ) : (
-                  <SignInSignUp />
-                )
-              }
-            />
-          </Routes>
-        </Router>
-      </div>
-    );
-  }
-}
+          <Route
+            path="/signin"
+            element={currentUser ? <Navigate to={'/'} /> : <SignInSignUp />}
+          />
+        </Routes>
+      </Router>
+    </div>
+  );
+};
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
