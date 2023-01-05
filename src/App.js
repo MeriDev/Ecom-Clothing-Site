@@ -30,7 +30,7 @@ const App = ({ currentUser, setCurrentUser }) => {
       if (userAuth) {
         const userRef = await createUserProfileDoc(userAuth);
 
-        onSnapshot(userRef, snapshot => {
+        onSnapshot(userRef, async snapshot => {
           setCurrentUser({
             currentUser: { id: snapshot.id, ...snapshot.data() },
           });

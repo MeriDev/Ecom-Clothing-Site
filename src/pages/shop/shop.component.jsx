@@ -1,13 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import CollectionOverview from '../../components/collection-overview/collection-overview.component';
 import './shop.styles.scss';
-
-import CollectionPage from '../collection/collection.component';
 
 import { Route, Routes } from 'react-router-dom';
 
-import { onSnapshot, collection } from 'firebase/firestore';
+import { onSnapshot, collection, getDocs } from 'firebase/firestore';
 import {
   db,
   convertCollectcionsSnapshotToObjects,
@@ -16,26 +13,49 @@ import {
 import { updateCollections } from '../../Redux/shop/shop.actions';
 import { connect } from 'react-redux';
 
-const ShopPage = ({ updateCollections }) => {
-  useEffect(() => {
-    const collectionRef = collection(db, 'collections');
+import CollectionOverview from '../../components/collection-overview/collection-overview.component';
+import CollectionPage from '../collection/collection.component';
+import WithSpinner from '../../components/with-spinner/with-spinner.component';
 
-    const unsubscribeFromSnapShort = onSnapshot(
-      collectionRef,
-      async snapshot => {
+const CollectionOverviewWithSpinner = WithSpinner(CollectionOverview);
+const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+
+const ShopPage = ({ updateCollections }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribeFromSnapShot = () =>
+      getDocs(collection(db, 'collections')).then(async snapshot => {
         const collectionsMap = convertCollectcionsSnapshotToObjects(snapshot);
         updateCollections(collectionsMap);
-        console.log(collectionsMap);
-      }
-    );
-    return () => unsubscribeFromSnapShort();
+
+        setLoading(false);
+      });
+
+    // const collectionRef = collection(db, 'collections');
+    // const unsubscribeFromSnapShot = onSnapshot(
+    //   collectionRef,
+    //   async snapshot => {
+    //     const collectionsMap = convertCollectcionsSnapshotToObjects(snapshot);
+    //     updateCollections(collectionsMap);
+
+    //     setLoading(false);
+    //   }
+    // );
+    return () => unsubscribeFromSnapShot();
   }, []);
 
   return (
     <div className="shop-page">
       <Routes>
-        <Route index element={<CollectionOverview />} />
-        <Route path=":category" element={<CollectionPage />} />
+        <Route
+          index
+          element={<CollectionOverviewWithSpinner loading={loading} />}
+        />
+        <Route
+          path=":category"
+          element={<CollectionPageWithSpinner loading={loading} />}
+        />
       </Routes>
     </div>
   );
