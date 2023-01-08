@@ -15,10 +15,10 @@ import { connect } from 'react-redux';
 
 import CollectionOverview from '../../components/collection-overview/collection-overview.component';
 import CollectionPage from '../collection/collection.component';
-import WithSpinner from '../../components/with-spinner/with-spinner.component';
+import Spinner from '../../components/with-spinner/spinner.component';
 
-const CollectionOverviewWithSpinner = WithSpinner(CollectionOverview);
-const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+const CollectionOverviewWithSpinner = Spinner(CollectionOverview);
+const CollectionPageWithSpinner = Spinner(CollectionPage);
 
 const ShopPage = ({ updateCollections }) => {
   const [loading, setLoading] = useState(true);
@@ -50,11 +50,11 @@ const ShopPage = ({ updateCollections }) => {
       <Routes>
         <Route
           index
-          element={<CollectionOverviewWithSpinner loading={loading} />}
+          element={<CollectionOverviewWithSpinner isLoading={loading} />}
         />
         <Route
           path=":category"
-          element={<CollectionPageWithSpinner loading={loading} />}
+          element={<CollectionPageWithSpinner isLoading={loading} />}
         />
       </Routes>
     </div>

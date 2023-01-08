@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 
 import {
   BrowserRouter as Router,
@@ -23,6 +23,8 @@ import { auth, createUserProfileDoc } from './firebase/firebase.utils';
 import { selectCurrentUser } from './Redux/users/user.selector';
 import { createStructuredSelector } from 'reselect';
 
+import Spinner from './components/with-spinner/spinner.component';
+
 // App component
 const App = ({ currentUser, setCurrentUser }) => {
   useEffect(() => {
@@ -44,19 +46,21 @@ const App = ({ currentUser, setCurrentUser }) => {
 
   return (
     <div>
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="shop/*" element={<ShopPage />} />
-          <Route path="checkout" element={<Checkout />} />
+      <Suspense fallback={<Spinner />}>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="shop/*" element={<ShopPage />} />
+            <Route path="checkout" element={<Checkout />} />
 
-          <Route
-            path="/signin"
-            element={currentUser ? <Navigate to={'/'} /> : <SignInSignUp />}
-          />
-        </Routes>
-      </Router>
+            <Route
+              path="/signin"
+              element={currentUser ? <Navigate to={'/'} /> : <SignInSignUp />}
+            />
+          </Routes>
+        </Router>
+      </Suspense>
     </div>
   );
 };
