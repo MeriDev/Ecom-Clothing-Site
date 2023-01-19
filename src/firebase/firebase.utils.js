@@ -7,7 +7,7 @@ import {
   setDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, o } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAt6B-P3ZImqoXBKk9cLL0wT7iYhoJGowI',
@@ -48,13 +48,21 @@ export const createUserProfileDoc = async (userAuth, additionalData) => {
   return userRef;
 };
 
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsunscribe = auth.onAuthStateChanged(userAuth => {
+      unsunscribe();
+      resolve(userAuth);
+    }, reject);
+  });
+};
 //* Sign in with google
 export const auth = getAuth(app);
 
-const provider = new GoogleAuthProvider();
+export const googleProvider = new GoogleAuthProvider();
 
 export const signUpWithGoogle = () => {
-  signInWithPopup(auth, provider)
+  signInWithPopup(auth, googleProvider)
     .then(result => {
       console.log(result);
     })
