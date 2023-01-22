@@ -1,16 +1,14 @@
 import './sign-in.styles.scss';
+import { useState } from 'react';
+import { connect } from 'react-redux';
 
 import CustomBtn from '../custom-button/custom-button-component';
-
 import FormInput from '../form-input/form-input.component';
-
-import { connect } from 'react-redux';
 
 import {
   googleSignInStart,
   emailSignInStart,
 } from '../../Redux/users/user.actions';
-import { useState } from 'react';
 
 const SignIn = ({ googleSignInStart, emailSignInStart }) => {
   const [email, setEmail] = useState('');
@@ -21,11 +19,6 @@ const SignIn = ({ googleSignInStart, emailSignInStart }) => {
 
     emailSignInStart(email, password);
   };
-
-  // handleChange = e => {
-  //   const { value, name } = e.target;
-  //   this.setState({ [name]: value });
-  // };
 
   return (
     <div className="sign-in">
@@ -63,10 +56,10 @@ const SignIn = ({ googleSignInStart, emailSignInStart }) => {
   );
 };
 
-const mapStateToProps = dispatch => ({
+const mapDispatchToProps = dispatch => ({
   googleSignInStart: () => dispatch(googleSignInStart()),
   emailSignInStart: (email, password) =>
     dispatch(emailSignInStart({ email, password })),
 });
 
-export default connect(null, mapStateToProps)(SignIn);
+export default connect(null, mapDispatchToProps)(SignIn);

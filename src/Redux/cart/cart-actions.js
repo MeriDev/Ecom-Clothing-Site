@@ -1,4 +1,4 @@
-import { cartTypes } from './cart-types';
+import cartTypes from './cart-types';
 
 export const toggleCartHidden = () => {
   return {
@@ -24,5 +24,11 @@ export const removeItemFromCart = item => {
   return {
     type: cartTypes.REMOVE_ITEM,
     payload: item,
+  };
+};
+
+export const clearCart = () => {
+  return {
+    type: cartTypes.CLEAR_CART,
   };
 };
